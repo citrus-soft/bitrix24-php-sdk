@@ -18,6 +18,7 @@ use Bitrix24\Exceptions\Bitrix24Exception;
 use Bitrix24\Exceptions\Bitrix24InsufficientScope;
 use Bitrix24\Exceptions\Bitrix24IoException;
 use Bitrix24\Exceptions\Bitrix24MethodNotFoundException;
+use Bitrix24\Exceptions\Bitrix24NotInstalledException;
 use Bitrix24\Exceptions\Bitrix24PaymentRequiredException;
 use Bitrix24\Exceptions\Bitrix24PortalDeletedException;
 use Bitrix24\Exceptions\Bitrix24PortalRenamedException;
@@ -765,40 +766,57 @@ class Bitrix24 implements iBitrix24
     )
     {
         if (array_key_exists('error', $arRequestResult)) {
+	        $code = strtoupper(trim($arRequestResult['error']));
+        	$description = array_key_exists('error_description', $arRequestResult) ? $arRequestResult['error_description'] : null;
             $errorMsg = sprintf('%s - %s in call [%s] for domain [%s]',
                 $arRequestResult['error'],
-                (array_key_exists('error_description', $arRequestResult) ? $arRequestResult['error_description'] : ''),
+                $description,
                 $methodName,
                 $this->getDomain());
             // throw specific API-level exceptions
-            switch (strtoupper(trim($arRequestResult['error']))) {
+            switch ($code) {
                 case 'WRONG_CLIENT':
                 case 'ERROR_OAUTH':
                     $this->log->error($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24WrongClientException($errorMsg);
+                    $e = new Bitrix24WrongClientException($errorMsg);
+                    break;
                 case 'ERROR_METHOD_NOT_FOUND':
                     $this->log->error($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24MethodNotFoundException($errorMsg);
+	                $e = new Bitrix24MethodNotFoundException($errorMsg);
+	                break;
                 case 'INVALID_TOKEN':
                 case 'INVALID_GRANT':
                     $this->log->error($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24TokenIsInvalidException($errorMsg);
+	                $e = new Bitrix24TokenIsInvalidException($errorMsg);
+	            break;
                 case 'EXPIRED_TOKEN':
                     $this->log->notice($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24TokenIsExpiredException($errorMsg);
+	                $e = new Bitrix24TokenIsExpiredException($errorMsg);
+	                break;
                 case 'PAYMENT_REQUIRED':
                     $this->log->error($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24PaymentRequiredException($errorMsg);
+	                $e = new Bitrix24PaymentRequiredException($errorMsg);
+	                break;
+	            case 'NOT_INSTALLED':
+	            	$this->log->error($errorMsg, $this->getErrorContext());
+		            $e = new Bitrix24NotInstalledException($errorMsg);
+		            break;
                 case 'NO_AUTH_FOUND':
                     $this->log->error($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24PortalRenamedException($errorMsg);
+	                $e = new Bitrix24PortalRenamedException($errorMsg);
+	                break;
                 case 'INSUFFICIENT_SCOPE':
                     $this->log->error($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24InsufficientScope($errorMsg);
+	                $e = new Bitrix24InsufficientScope($errorMsg);
+	                break;
                 default:
                     $this->log->error($errorMsg, $this->getErrorContext());
-                    throw new Bitrix24ApiException($errorMsg);
+	                $e = new Bitrix24ApiException($errorMsg);
+	                break;
             }
+            throw $e->setRawErrorCode($code)
+	                ->setRawErrorDesription($description)
+	                ->setDomain($this->getDomain());
         }
 
         return null;
