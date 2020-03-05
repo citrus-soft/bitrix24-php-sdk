@@ -1,6 +1,6 @@
 {
-    "name": "mesilov/bitrix24-php-sdk",
-    "description": "A powerfull PHP library for the Bitrix24 REST API",
+    "name": "citrus-soft/bitrix24-php-sdk",
+    "description": "A powerfull PHP library for the Bitrix24 REST API. Fork of mesilov/bitrix24-php-sdk",
     "keywords": ["Bitrix24", "PHP", "REST", "API"],
     "type": "library",
     "homepage": "https://github.com/mesilov/bitrix24-php-sdk",
