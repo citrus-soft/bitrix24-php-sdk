@@ -15,18 +15,18 @@ namespace Bitrix24\Exceptions;
  */
 class Bitrix24ApiException extends Bitrix24Exception
 {
-	/** @var string */
+	/** @var string|null */
 	protected $rawErrorCode;
-	/** @var string */
+	/** @var string|null */
 	protected $rawErrorDesription;
-	/** @var  string */
+	/** @var  string|null */
 	protected $domain;
 
 	/**
 	 * @param string $rawErrorCode
 	 * @return Bitrix24ApiException
 	 */
-	public function setRawErrorCode(string $rawErrorCode): Bitrix24ApiException
+	public function setRawErrorCode(?string $rawErrorCode): Bitrix24ApiException
 	{
 		$this->rawErrorCode = $rawErrorCode;
 
@@ -37,7 +37,7 @@ class Bitrix24ApiException extends Bitrix24Exception
 	 * @param string $rawErrorDesription
 	 * @return Bitrix24ApiException
 	 */
-	public function setRawErrorDesription(string $rawErrorDesription): Bitrix24ApiException
+	public function setRawErrorDesription(?string $rawErrorDesription): Bitrix24ApiException
 	{
 		$this->rawErrorDesription = $rawErrorDesription;
 
@@ -47,7 +47,7 @@ class Bitrix24ApiException extends Bitrix24Exception
 	/**
 	 * @return string
 	 */
-	public function getRawErrorCode(): string
+	public function getRawErrorCode(): ?string
 	{
 		return $this->rawErrorCode;
 	}
@@ -64,7 +64,7 @@ class Bitrix24ApiException extends Bitrix24Exception
 	 * @param string $domain
 	 * @return Bitrix24ApiException
 	 */
-	public function setDomain(string $domain): Bitrix24ApiException
+	public function setDomain(?string $domain): Bitrix24ApiException
 	{
 		$this->domain = $domain;
 
@@ -74,7 +74,7 @@ class Bitrix24ApiException extends Bitrix24Exception
 	/**
 	 * @return string
 	 */
-	public function getDomain(): string
+	public function getDomain(): ?string
 	{
 		return $this->domain;
 	}
